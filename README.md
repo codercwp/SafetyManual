@@ -1,50 +1,72 @@
-<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
+# 微信程序安全手册开发文档2.0
 
-### Laravel6
+这次开发中使用到的组件较少，图片上传组件，后台登陆组件，小程序获取openid组件。
 
-#### 对Laravel6进行了小修改（也不算是修改,就算是把常用的东西整合上去）
+由于设计的功能点不是太多，所以contoller中只有两个文件夹admin 和 user
 
-#### 1、返回接口统一
-    文件位置：
-        App\Helpers\json.php;
-    使用：
-        json_success($msg, $data);
-        json_fail($msg, $data);
-#### 2、Monolog\Logger整合
-    文件位置：
-        App\Helpers\logger.php;
-    使用：
-        logInfo($title, [$msg]);
-        logWarning($title, [$msg]);
-        logError($title, [$msg]);
-        logDebug($title, [$msg]);
-#### 3、JWT整合
-    文件位置：
-        App\Models\User
-    使用：
-        jwt整合到了auth，使用与auth一样
-#### 4、重写了异常处理
-    文件位置：
-        App\Exceptions\Handler
-    
-#### 5、整合了Repositories 设计模式
-        生成对应文件：
-            php artisan init:model-service
-        文件位置：
-            App\Repositories\*
-            App\Facades\*
-            App\Providers\RepositoryServiceProvider
-        使用：
-            use App\Facades\***;
-            ***::getFirst()...
-        这里封装的方法可以查看:
-            App\Traits\RepositoryBaseRepositoryTrait
-            App\Repositories\CommonRepository
-#### 6、在Helpers中封装了很多方法，也可以自己添加方法
-        文件位置：
-            App\Helpers\*
-#### 7、在 App\Traits\Controller\*下封装了一些公共的Controller方法，需要使用就use
-        文件位置：
-            App\Traits\Controller\*
-        使用：
-            use App\Facades\Controller\***;
+这里两个文件夹，admin放入管理员相关contorller ，user放入的是用户端的controller
+
+#### 需要执行的命令行
+
+composer install   
+
+composer dump-auto
+
+php artisan storage:ink
+
+#### 组件使用步骤
+
+在书写的时候，只用书写upload（$pic）,这里的pic就是前端传入的图片即可。最后返回的是一个绝对的路径。
+
+#### 审批的流程
+
+用户文章，大病求助，走失儿童，这三部分需要审批
+
+这次审批涉及到三个状态：
+
+审批中  -> 已审批 -> 发布中
+
+后端只用传入  审批未通过  审批中 发布三个状态
+
+对应的状态码分别是：
+
+审批未通过：3
+
+审批中（默认状态）：2
+
+发布中（也就是审批通过）：4
+
+需要注意的就是，我们数据库中默认的就是状态2，所以存入的时候，不需要单独取入这个状态。
+
+#### 
+
+#### 文章类型
+
+1自然灾害（教育）
+
+2心里教育（教育）
+
+3疫情防控（教育）
+
+4电信诈骗（教育）
+
+5自然灾害（新闻）
+
+6安全健康（新闻 包括溺水 食品安全 养生等等）
+
+7社区事件（新闻 包括儿童走失，邪教，诈骗，暴乱等等）
+
+8交通安全（新闻）
+
+9疫情防控（新闻）
+
+分别对应的类型为：1、2、3、4、5、6、7、8、9
+
+#### 后台
+
+我们后台实现的功能只有自己的文章发布和审核状态。
+
+#### 前端
+
+前端需要在发布东西的时候。需要将发布用户的openid传给后端储存。然后通过openid获取用户发布的东西。
+
